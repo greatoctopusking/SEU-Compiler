@@ -14,7 +14,9 @@ enum TokenType {
 	T_CLOSE_PAREN,
 	T_OPEN_CURLY,
 	T_CLOSE_CURLY,
-	T_INT_CONST
+	T_INT_CONST,
+	T_SEMI
+	T_EOF
 };
 
 struct Token {
