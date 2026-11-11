@@ -5,6 +5,7 @@
 #include<cstdio>
 #include<memory>
 #include<vector>
+#include<cctype>
 
 enum TokenType {
 	KW_RETURN,
@@ -15,9 +16,12 @@ enum TokenType {
 	T_OPEN_CURLY,
 	T_CLOSE_CURLY,
 	T_INT_CONST,
-	T_SEMI
-	T_EOF
+	T_SEMI,
+	T_EOF,
+	UNKNOWN
 };
+
+const char* tokenTypeToString(TokenType type);
 
 struct Token {
 	TokenType type;
@@ -30,7 +34,7 @@ public:
     virtual ~BaseAST() = default;
 };
 
-void parse(FILE* file, BaseAST* ast);
+//void parse(FILE* file, BaseAST* ast);
 
 void lex(FILE* file, std::vector<Token>& tokens);
 
@@ -147,5 +151,5 @@ public:
 	void print()const override {
 		std::cout << "IntConst: " << value << std::endl;
 	}
-	~Int_Const() = default;
+	~IntConst() = default;
 };

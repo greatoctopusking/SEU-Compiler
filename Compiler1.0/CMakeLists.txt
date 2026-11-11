@@ -1,5 +1,8 @@
-﻿project(SEU-Compiler VERSION 1.0.0 LANGUAGES C CXX)
+﻿add_executable(compiler
+    src/main.cpp
+    src/lexer.cpp
+)
 
-set(CMAKE_BUILD_TYPE Debug)
+target_compile_features(compiler PRIVATE cxx_std_17)
 
-
+target_include_directories(compiler PRIVATE src)
