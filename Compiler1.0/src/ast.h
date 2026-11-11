@@ -4,8 +4,23 @@
 #include<string>
 #include<cstdio>
 #include<memory>
+#include<vector>
 
-BaseAST* parse(FILE* file);
+enum TokenType {
+	KW_RETURN,
+	KW_INT,
+	T_IDENT,
+	T_OPEN_PAREN,
+	T_CLOSE_PAREN,
+	T_OPEN_CURLY,
+	T_CLOSE_CURLY,
+	T_INT_CONST
+};
+
+struct Token {
+	TokenType type;
+	std::string value;
+};
 
 class BaseAST {
 public:
@@ -13,8 +28,13 @@ public:
     virtual ~BaseAST() = default;
 };
 
+void parse(FILE* file, BaseAST* ast);
+
+void lex(FILE* file, std::vector<Token>& tokens);
+
 enum Type {
-	Int;
+	Int,
+	Void
 };
 
 class CompUnit : public BaseAST {
@@ -63,7 +83,6 @@ public:
 		case Type::Int: 
 			std::cout << "int"; break;
 		}
-		std::cout << value << std::endl;
 	}
 	~FuncType() = default;
 };
@@ -94,23 +113,37 @@ public:
 
 class Stmt : public BaseAST {
 public:
-	std::unique_ptr<BaseAST> num;
+	std::unique_ptr<BaseAST> number;
 	void print() const override {
 		std::cout << "Stmt: " << std::endl;
 		std::cout << '{' << std::endl;
-		if (num) {
-			num->print();
+		if (number) {
+			number->print();
 		}
 		std::cout << '}' << std::endl;
 	}
 	~Stmt() = default;
 };
 
-class Num : public BaseAST {
+class Number : public BaseAST {
+public:
+	std::unique_ptr<BaseAST> int_const;
+	void print() const override {
+		std::cout << "Number: " << std::endl;
+		std::cout << '{' << std::endl;
+		if (int_const) {
+			int_const->print();
+		}
+		std::cout << '}' << std::endl;
+	}
+	~Number() = default;
+};
+
+class IntConst :public BaseAST {
 public:
 	int value = 0;
-	void print() const override {
-		std::cout << "Num: " << value << std::endl;
+	void print()const override {
+		std::cout << "IntConst: " << value << std::endl;
 	}
-	~Num() = default;
+	~Int_Const() = default;
 };
