@@ -34,7 +34,7 @@ public:
     virtual ~BaseAST() = default;
 };
 
-void parse(FILE* file, BaseAST* ast);
+void parse(FILE* file, std::unique_ptr<BaseAST>& ast);
 
 void lex(FILE* file, std::vector<Token>& tokens);
 
@@ -46,6 +46,9 @@ enum Type {
 class CompUnit : public BaseAST {
 public:
 	std::unique_ptr<BaseAST> funcdef;
+
+	CompUnit(std::unique_ptr<BaseAST> funcdef) : funcdef(std::move(funcdef)) {}
+
 	void print() const override {
 		std::cout << "CompUnit: " << std::endl;
 		std::cout << '{' << std::endl;
@@ -62,6 +65,10 @@ public:
 	std::unique_ptr<BaseAST> functype;
 	std::unique_ptr<BaseAST> ident;
 	std::unique_ptr<BaseAST> block;
+
+	FuncDef(std::unique_ptr<BaseAST> functype, std::unique_ptr<BaseAST> ident, std::unique_ptr<BaseAST> block)
+		: functype(std::move(functype)), ident(std::move(ident)), block(std::move(block)) {}
+
 	void print() const override {
 		std::cout << "FuncDef: " << std::endl;
 		std::cout << '{' << std::endl;
@@ -83,11 +90,22 @@ public:
 class FuncType : public BaseAST {
 public:
 	Type value = Type::Int;
+	FuncType(std::string v) {
+		if (v == "int") {
+			value = Type::Int;
+		}
+		else if (v == "void") {
+			value = Type::Void;
+		}
+		else {
+			assert(false && "Invalid function type");
+		}
+	}
 	void print() const override {
 		std::cout << "FuncType: ";
 		switch (value) {
 		case Type::Int: 
-			std::cout << "int"; break;
+			std::cout << "int" << std::endl; break;
 		}
 	}
 	~FuncType() = default;
@@ -96,6 +114,7 @@ public:
 class Ident : public BaseAST {
 public:
 	std::string value;
+	Ident(std::string v) : value(v) {}
 	void print() const override {
 		std::cout << "Ident: ";
 		std::cout << value << std::endl;
@@ -106,6 +125,7 @@ public:
 class Block : public BaseAST {
 public:
 	std::unique_ptr<BaseAST> stmt;
+	Block(std::unique_ptr<BaseAST> stmt) : stmt(std::move(stmt)) {}
 	void print() const override {
 		std::cout << "Block: " << std::endl;
 		std::cout << '{' << std::endl;
@@ -120,6 +140,7 @@ public:
 class Stmt : public BaseAST {
 public:
 	std::unique_ptr<BaseAST> number;
+	Stmt(std::unique_ptr<BaseAST> number) : number(std::move(number)) {}
 	void print() const override {
 		std::cout << "Stmt: " << std::endl;
 		std::cout << '{' << std::endl;
@@ -134,6 +155,7 @@ public:
 class Number : public BaseAST {
 public:
 	std::unique_ptr<BaseAST> int_const;
+	Number(std::unique_ptr<BaseAST> int_const) : int_const(std::move(int_const)) {}
 	void print() const override {
 		std::cout << "Number: " << std::endl;
 		std::cout << '{' << std::endl;
@@ -148,6 +170,13 @@ public:
 class IntConst :public BaseAST {
 public:
 	int value = 0;
+	IntConst(std::string v) {
+		try {
+			value = std::stoi(v);
+		} catch (const std::exception&) {
+			value = 0;
+		}
+	}
 	void print()const override {
 		std::cout << "IntConst: " << value << std::endl;
 	}
