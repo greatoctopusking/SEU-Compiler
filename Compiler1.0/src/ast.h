@@ -34,7 +34,7 @@ public:
     virtual ~BaseAST() = default;
 };
 
-//void parse(FILE* file, BaseAST* ast);
+void parse(FILE* file, BaseAST* ast);
 
 void lex(FILE* file, std::vector<Token>& tokens);
 
