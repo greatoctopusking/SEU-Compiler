@@ -30,7 +30,7 @@ struct Token {
 
 class BaseAST {
 public:
-    virtual void print() const = 0;
+    virtual void print(int depth = 0) const = 0;
     virtual ~BaseAST() = default;
 };
 
@@ -49,13 +49,13 @@ public:
 
 	CompUnit(std::unique_ptr<BaseAST> funcdef) : funcdef(std::move(funcdef)) {}
 
-	void print() const override {
-		std::cout << "CompUnit: " << std::endl;
-		std::cout << '{' << std::endl;
+	void print(int depth) const override {
+		std::cout << std::string(depth * 2, ' ') << "CompUnit: " << std::endl;
+		std::cout << std::string(depth * 2, ' ') << '{' << std::endl;
 		if (funcdef) {
-			funcdef->print();
+			funcdef->print(depth + 1);
 		}
-		std::cout << '}' << std::endl;
+		std::cout << std::string(depth * 2, ' ') << '}' << std::endl;
 	}
 	~CompUnit() = default;
 };
@@ -69,19 +69,19 @@ public:
 	FuncDef(std::unique_ptr<BaseAST> functype, std::unique_ptr<BaseAST> ident, std::unique_ptr<BaseAST> block)
 		: functype(std::move(functype)), ident(std::move(ident)), block(std::move(block)) {}
 
-	void print() const override {
-		std::cout << "FuncDef: " << std::endl;
-		std::cout << '{' << std::endl;
+	void print(int depth) const override {
+		std::cout << std::string(depth * 2, ' ') << "FuncDef: " << std::endl;
+		std::cout << std::string(depth * 2, ' ') << '{' << std::endl;
 		if (functype) {
-			functype->print();
+			functype->print(depth + 1);
 		}
 		if (ident) {
-			ident->print();
+			ident->print(depth + 1);
 		}
 		if (block) {
-			block->print();
+			block->print(depth + 1);
 		}
-		std::cout << '}' << std::endl;
+		std::cout << std::string(depth * 2, ' ') << '}' << std::endl;
 	}
 	~FuncDef() = default;
 };
@@ -101,8 +101,8 @@ public:
 			assert(false && "Invalid function type");
 		}
 	}
-	void print() const override {
-		std::cout << "FuncType: ";
+	void print(int depth) const override {
+		std::cout << std::string(depth * 2, ' ') << "FuncType: ";
 		switch (value) {
 		case Type::Int: 
 			std::cout << "int" << std::endl; break;
@@ -115,8 +115,8 @@ class Ident : public BaseAST {
 public:
 	std::string value;
 	Ident(std::string v) : value(v) {}
-	void print() const override {
-		std::cout << "Ident: ";
+	void print(int depth) const override {
+		std::cout << std::string(depth * 2, ' ') << "Ident: ";
 		std::cout << value << std::endl;
 	}
 	~Ident() = default;
@@ -126,13 +126,13 @@ class Block : public BaseAST {
 public:
 	std::unique_ptr<BaseAST> stmt;
 	Block(std::unique_ptr<BaseAST> stmt) : stmt(std::move(stmt)) {}
-	void print() const override {
-		std::cout << "Block: " << std::endl;
-		std::cout << '{' << std::endl;
+	void print(int depth) const override {
+		std::cout << std::string(depth * 2, ' ') << "Block: " << std::endl;
+		std::cout << std::string(depth * 2, ' ') << '{' << std::endl;
 		if (stmt) {
-			stmt->print();
+			stmt->print(depth + 1);
 		}
-		std::cout << '}' << std::endl;
+		std::cout << std::string(depth * 2, ' ') << '}' << std::endl;
 	}
 	~Block() = default;
 };
@@ -141,13 +141,13 @@ class Stmt : public BaseAST {
 public:
 	std::unique_ptr<BaseAST> number;
 	Stmt(std::unique_ptr<BaseAST> number) : number(std::move(number)) {}
-	void print() const override {
-		std::cout << "Stmt: " << std::endl;
-		std::cout << '{' << std::endl;
+	void print(int depth) const override {
+		std::cout << std::string(depth * 2, ' ') << "Stmt: " << std::endl;
+		std::cout << std::string(depth * 2, ' ') << '{' << std::endl;
 		if (number) {
-			number->print();
+			number->print(depth + 1);
 		}
-		std::cout << '}' << std::endl;
+		std::cout << std::string(depth * 2, ' ') << '}' << std::endl;
 	}
 	~Stmt() = default;
 };
@@ -156,13 +156,13 @@ class Number : public BaseAST {
 public:
 	std::unique_ptr<BaseAST> int_const;
 	Number(std::unique_ptr<BaseAST> int_const) : int_const(std::move(int_const)) {}
-	void print() const override {
-		std::cout << "Number: " << std::endl;
-		std::cout << '{' << std::endl;
+	void print(int depth) const override {
+		std::cout << std::string(depth * 2, ' ') << "Number: " << std::endl;
+		std::cout << std::string(depth * 2, ' ') << '{' << std::endl;
 		if (int_const) {
-			int_const->print();
+			int_const->print(depth + 1);
 		}
-		std::cout << '}' << std::endl;
+		std::cout << std::string(depth * 2, ' ') << '}' << std::endl;
 	}
 	~Number() = default;
 };
@@ -177,8 +177,8 @@ public:
 			value = 0;
 		}
 	}
-	void print()const override {
-		std::cout << "IntConst: " << value << std::endl;
+	void print(int depth) const override {
+		std::cout << std::string(depth * 2, ' ') << "IntConst: " << value << std::endl;
 	}
 	~IntConst() = default;
 };
